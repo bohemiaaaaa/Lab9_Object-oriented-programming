@@ -1,7 +1,7 @@
 [project]
-name = "oop7"
+name = "oop9"
 version = "0.1.0"
-description = "oop7"
+description = "oop9"
 readme = "README.md"
 requires-python = ">=3.13.3"
 dependencies = [
