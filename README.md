@@ -13,8 +13,6 @@ uv sync
 # Запуск задания 1
 python tasks/task1.py
 
-# Запуск задания 2
-python tasks/task2.py
 
 # Запуск тестов
 pytest
