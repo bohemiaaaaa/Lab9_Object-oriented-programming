@@ -1,34 +1,35 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 import math
 from multiprocessing import Manager, Process
 
 
 class SeriesProcess(Process):
-    def __init__(self, x, eps, start_idx, step, results, pos):
+    def __init__(
+        self, x: float, eps: float, start_idx: int, step: int, results: dict, pos: int
+    ) -> None:
         super().__init__()
-        self.x = x
-        self.eps = eps
-        self.start_idx = start_idx
-        self.step = step
-        self.results = results
-        self.pos = pos
+        self.x: float = x
+        self.eps: float = eps
+        self.start_idx: int = start_idx
+        self.step: int = step
+        self.results: dict = results
+        self.pos: int = pos
 
-    def _term(self, n):
+    def _term(self, n: int) -> float:
         try:
             return 1.0 / ((2 * n - 1) * (self.x ** (2 * n - 1)))
         except OverflowError:
             return 0.0
 
-    def run(self):
-        partial_sum = 0.0
-        count = 0
+    def run(self) -> None:
+        partial_sum: float = 0.0
+        count: int = 0
 
-        n = self.start_idx
+        n: int = self.start_idx
         while True:
-            term = self._term(n)
+            term: float = self._term(n)
             if abs(term) < self.eps:
                 break
             partial_sum += term
@@ -39,10 +40,10 @@ class SeriesProcess(Process):
         self.results[f"count_{self.pos}"] = count
 
 
-def calculate_series(x, eps, num_processes=4):
+def calculate_series(x: float, eps: float, num_processes: int = 4) -> tuple[float, int]:
     with Manager() as manager:
-        results = manager.dict()
-        processes = []
+        results: dict = manager.dict()
+        processes: list = []
 
         for i in range(num_processes):
             p = SeriesProcess(x, eps, i + 1, num_processes, results, i)
@@ -52,11 +53,11 @@ def calculate_series(x, eps, num_processes=4):
         for p in processes:
             p.join()
 
-        total_sum = sum(results[f"sum_{i}"] for i in range(num_processes))
-        total_count = sum(results[f"count_{i}"] for i in range(num_processes))
+        total_sum: float = sum(results[f"sum_{i}"] for i in range(num_processes))
+        total_count: int = sum(results[f"count_{i}"] for i in range(num_processes))
 
     return total_sum, total_count
 
 
-def get_control_value(x):
+def get_control_value(x: float) -> float:
     return 0.5 * math.log((x + 1) / (x - 1))
